@@ -41,7 +41,7 @@ class Cityscapes(BaseDataset):
         self.multi_scale = multi_scale
         self.flip = flip
         
-        self.img_list = [line.strip().split() for line in open(root+list_path)]
+        self.img_list = [line.strip().split() for line in open(list_path)]
 
         self.files = self.read_files()
         if num_samples:
@@ -100,10 +100,10 @@ class Cityscapes(BaseDataset):
     def __getitem__(self, index):
         item = self.files[index]
         name = item["name"]
-        # image = cv2.imread(os.path.join(self.root,'cityscapes',item["img"]),
-        #                    cv2.IMREAD_COLOR)
-        image = cv2.imread(os.path.join(self.root, item["img"]),
+        image = cv2.imread(os.path.join(self.root,'cityscapes',item["img"]),
                            cv2.IMREAD_COLOR)
+        # image = cv2.imread(os.path.join(self.root, item["img"]),
+        #                    cv2.IMREAD_COLOR)
         size = image.shape
 
         if 'test' in self.list_path:
