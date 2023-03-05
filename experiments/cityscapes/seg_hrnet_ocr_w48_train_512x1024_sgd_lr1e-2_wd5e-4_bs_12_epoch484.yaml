@@ -10,7 +10,7 @@ PRINT_FREQ: 10
 
 DATASET:
   DATASET: cityscapes
-  ROOT: ../../input/
+  ROOT: ../../input/cityscapes/Cityscapes/
   TEST_SET: 'data/list/cityscapes/val.lst'
   TRAIN_SET: 'data/list/cityscapes/train.lst'
   NUM_CLASSES: 19
