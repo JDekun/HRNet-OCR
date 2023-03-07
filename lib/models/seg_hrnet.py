@@ -464,7 +464,7 @@ class HighResolutionNet(nn.Module):
 
         return x
 
-    def init_weights(self, pretrained='',):
+    def init_weights(self, cfg, pretrained='',):
         logger.info('=> init weights from normal distribution')
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
@@ -478,14 +478,15 @@ class HighResolutionNet(nn.Module):
             model_dict = self.state_dict()              
             pretrained_dict = {k: v for k, v in pretrained_dict.items()
                                if k in model_dict.keys()}
-            for k, _ in pretrained_dict.items():
-                logger.info(
-                    '=> loading {} pretrained model {}'.format(k, pretrained))
+            if cfg.RANK == 0:
+                for k, _ in pretrained_dict.items():
+                    logger.info(
+                        '=> loading RANK{} {} pretrained model {}'.format(cfg.RANK, k, pretrained))
             model_dict.update(pretrained_dict)
             self.load_state_dict(model_dict)
 
 def get_seg_model(cfg, **kwargs):
     model = HighResolutionNet(cfg, **kwargs)
-    model.init_weights(cfg.MODEL.PRETRAINED)
+    model.init_weights(cfg, cfg.MODEL.PRETRAINED)
 
     return model

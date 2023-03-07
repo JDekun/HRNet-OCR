@@ -48,7 +48,12 @@ def parse_args():
                         nargs=argparse.REMAINDER)
 
     args = parser.parse_args()
-    update_config(config, args)
+
+    local_rank = ["RANK"]
+    local_rank.append(os.environ["RANK"])
+    config.merge_from_list(local_rank)
+    
+    update_config(config, args) 
 
     return args
 
@@ -72,8 +77,11 @@ def main():
     logger, final_output_dir, tb_log_dir = create_logger(
         config, args.cfg, 'train')
 
-    logger.info(pprint.pformat(args))
-    logger.info(config)
+    distributed = args.local_rank >= 0
+    # 只是的rank0打印参数信息
+    if distributed and args.local_rank == 0:
+        logger.info(pprint.pformat(args))
+        logger.info(config)
 
     writer_dict = {
         'writer': SummaryWriter(tb_log_dir),
@@ -86,7 +94,7 @@ def main():
     cudnn.deterministic = config.CUDNN.DETERMINISTIC
     cudnn.enabled = config.CUDNN.ENABLED
     gpus = list(config.GPUS)
-    distributed = args.local_rank >= 0
+    
     if distributed:
         device = torch.device('cuda:{}'.format(args.local_rank))    
         torch.cuda.set_device(device)
